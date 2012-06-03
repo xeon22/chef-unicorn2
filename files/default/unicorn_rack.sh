@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 CONFIG_PATHS=$(awk -F: '{ print $2 }' /etc/unicorn.conf)
 CONFIG=$(cat /etc/unicorn.conf)
 
@@ -9,9 +11,7 @@ start_app() {
   local bin=$3
   local user=$4
 
-  cd $path
-  sudo -iu $user bundle exec "${bin}" -c "${config_path}" -E production -D
-  cd $OLDPWD
+  sudo -iu $user sh -c "cd ${path}; bundle exec "${bin}" -c "${config_path}" -E production -D"
 }
 
 case "$1" in
@@ -23,10 +23,10 @@ case "$1" in
   reload)
     for path in ${CONFIG_PATHS}
     do
-      pkill -USR2 -f "unicorn master.*${path}"
+      pkill -USR2 -f "unicorn(_rails)? master.*${path}"
       echo "Waiting for new unicorns..."
       sleep 5
-      pkill -QUIT -f "unicorn master \\(old\\).*${path}"
+      pkill -QUIT -f "unicorn(_rails)? master \\(old\\).*${path}"
     done
   ;;
 
@@ -57,7 +57,7 @@ case "$1" in
     for path in ${CONFIG_PATHS}
     do
       echo "Killing ${path} with INT signal"
-      pkill -INT -f "unicorn master.*${path}"
+      pkill -INT -f "unicorn(_rails)? master.*${path}"
     done
   ;;
 esac

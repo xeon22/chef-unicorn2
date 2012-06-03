@@ -1,7 +1,7 @@
 require 'yajl'
 
 user 'rails' do
-  shell "/bin/false"
+  shell "/bin/bash"
   action :create
 end
 
