@@ -5,10 +5,6 @@ user 'rails' do
   action :create
 end
 
-gem_package "sys-proctable" do
-  action :install
-end
-
 cookbook_file "/etc/init.d/unicorn_rack" do
   source 'unicorn_rack.sh'
   mode 00750
